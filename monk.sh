@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 ##
 ##
@@ -23,7 +23,7 @@ NC='\033[0m' # No Color
 ## Light Gray   0;37     White         1;37
 
 echo && echo
-echo "***************************************"
+echo "*******************************v1.3.0**"
 echo "***************MONK COIN***************"
 echo "***************MAIN MENU***************"
 echo "*******http://www.monkey.vision/*******"
@@ -36,13 +36,16 @@ echo -e "5. STOP NODES" #  -> MONK_STOP.SH" # OK
 echo -e "6. INSTALL NEW NODES" #  -> MONK_SETUPV2.SH" # OK
 echo -e "7. CHECK NODES STATUS" #  -> MONK_CHECK_STATUS.SH" # OK
 echo -e "8. RESYNC SPECIFIC NODE (useful if node is stopped)" # -> monk_resync.sh # OK 
-echo -e "${YELLOW}9. MONKEY LOGO${RED}" # MONKEY LOGO
-echo -e "10. EXIT${NC}" # OK
+echo -e "9. CALCULATE FREE MEMORY AND CPU FOR NEW NODES" # -> memory_cpu_sysinfo.sh # OK 
+echo -e "${YELLOW}10. MONKEY LOGO${RED}" # MONKEY LOGO
+echo -e "11. EXIT${NC}" # OK
 echo "---------------------------------------"
 echo "choose option number:"
 read OPTION
 # echo ${OPTION}
 ALIAS=""
+
+clear
 
 if [[ ${OPTION} == "1" ]] ; then
   wget https://raw.githubusercontent.com/MONKEYPROJECT/Guides/master/monk_list.sh -O monk_list.sh > /dev/null 2>&1
@@ -97,11 +100,16 @@ elif [[ ${OPTION} == "8" ]] ; then
   dos2unix monk_resync.sh > /dev/null 2>&1
   /bin/bash ./monk_resync.sh $ALIAS
 elif [[ ${OPTION} == "9" ]] ; then  
+  wget https://raw.githubusercontent.com/MONKEYPROJECT/Guides/master/memory_cpu_sysinfo.sh -O memory_cpu_sysinfo.sh > /dev/null 2>&1
+  chmod 777 memory_cpu_sysinfo.sh
+  dos2unix memory_cpu_sysinfo.sh > /dev/null 2>&1
+  /bin/bash ./memory_cpu_sysinfo.sh
+elif [[ ${OPTION} == "10" ]] ; then  
   wget https://raw.githubusercontent.com/MONKEYPROJECT/Guides/master/monkey_logo.sh -O monkey_logo.sh > /dev/null 2>&1
   chmod 777 monkey_logo.sh
   dos2unix monkey_logo.sh > /dev/null 2>&1
   /bin/bash ./monkey_logo.sh
-elif [[ ${OPTION} == "10" ]] ; then
+elif [[ ${OPTION} == "11" ]] ; then
   exit 0
 fi
 ###
