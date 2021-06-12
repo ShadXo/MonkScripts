@@ -7,8 +7,8 @@ else
   PARAM1=${PARAM1,,}
 fi
 
-for FILE in ~/bin/monkey-cli_$PARAM1.sh; do
+for FILE in ~/bin/monk-cli_$PARAM1.sh; do
   echo "*******************************************"
   echo "FILE "$FILE
-  $FILE masternode status
+  $FILE getmasternodestatus
 done

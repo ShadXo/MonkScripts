@@ -9,19 +9,21 @@ BROWN='\033[0;34m'
 NC='\033[0m' # No Color
 
 # CONFIGURATION
-NAME="monkey"
+NAME="monk"
 NAMEALIAS="monk"
-WALLETVERSION="2.3.0"
+WALLETVERSION="3.0.0.0"
 
 # ADDITINAL CONFIGURATION
 WALLETDLFOLDER="${NAME}-${WALLETVERSION}"
-WALLETDL="${WALLETDLFOLDER}-x86_64-linux-gnu.tar.gz"
-URL="https://github.com/decenomy/MonkeyV2/releases/download/v${WALLETVERSION}/${WALLETDL}"
+#WALLETDL="${WALLETDLFOLDER}-x86_64-linux-gnu.tar.gz"
+WALLETDL="${WALLETDLFOLDER}-Linux.zip"
+URL="https://github.com/decenomy/MONK/releases/download/v${WALLETVERSION}/${WALLETDL}"
 CONF_FILE="${NAME}.conf"
 CONF_DIR_TMP=~/"${NAME}_tmp"
-BOOTSTRAPURL="http://167.86.97.235/${NAMEALIAS}/bootstrap/bootstrap.zip"
-PORT=37233
-RPCPORT=9234
+#BOOTSTRAPURL="http://167.86.97.235/${NAMEALIAS}/bootstrap/bootstrap.zip"
+BOOTSTRAPURL="https://explorer.decenomy.net/bootstraps/${NAMEALIAS}/bootstrap.zip"
+PORT=32270
+RPCPORT=32271
 
 cd ~
 echo "******************************************************************************"
@@ -51,7 +53,9 @@ function get_ip() {
   declare -a NODE_IPS
   for ips in $(netstat -i | awk '!/Kernel|Iface|lo/ {print $1," "}')
   do
-    NODE_IPS+=($(curl --interface $ips --connect-timeout 2 -s4 icanhazip.com))
+    NODE_IPS+=($(ip addr show dev $ips | grep inet | awk -F '[ \t]+|/' '{print $3}' | grep -v ^fe80 | grep -v ^::1 | grep -v ^1.2.3))
+    #NODE_IPS+=($(curl --interface $ips --connect-timeout 2 -s4 icanhazip.com))
+    #NODE_IPS+=($(curl --interface $ips --connect-timeout 2 -s6 icanhazip.com))
   done
 
   if [ ${#NODE_IPS[@]} -gt 1 ]
@@ -71,8 +75,16 @@ function get_ip() {
 }
 
 get_ip
-IP=NODEIP
-IPONE=$(curl -s4 icanhazip.com)
+#IP="[${NODEIP}]"
+PUBIPv4=$( timeout --signal=SIGKILL 10s wget -4qO- -T 10 -t 2 -o- "--bind-address=${NODEIP}" http://ipinfo.io/ip )
+PUBIPv6=$( timeout --signal=SIGKILL 10s wget -6qO- -T 10 -t 2 -o- "--bind-address=${NODEIP}" http://v6.ident.me )
+if [[ $NODEIP =~ .*:.* ]]; then
+#INTIP=$(ip -4 addr show dev $ips | grep inet | awk -F '[ \t]+|/' '{print $3}' | head -1)
+#IP=${INTIP}
+IP="[${NODEIP}]"
+else
+IP=${NODEIP}
+fi
 
 echo -e "${YELLOW}Do you want to install all needed dependencies (no if you did it before, yes if you are installing your first node)? [y/n]${NC}"
 read DOSETUP
@@ -89,7 +101,7 @@ if [[ ${DOSETUP,,} =~ "y" ]] ; then
    sudo apt-get install -y libminiupnpc-dev
    sudo apt-get install -y autoconf
    sudo apt-get install -y automake unzip
-   sudo add-apt-repository  -y  ppa:bitcoin/bitcoin
+   sudo add-apt-repository -y ppa:bitcoin/bitcoin
    sudo apt-get update
    sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
    sudo apt-get install -y dos2unix
@@ -110,18 +122,20 @@ if [[ ${DOSETUP,,} =~ "y" ]] ; then
       rm -rfd $CONF_DIR_TMP
    fi
 
-   mkdir -p $CONF_DIR_TMP   
-   cd $CONF_DIR_TMP   
-   
+   mkdir -p $CONF_DIR_TMP
+   cd $CONF_DIR_TMP
+
    wget ${URL}
    chmod 775 ${WALLETDL}
-   tar -xvzf ${WALLETDL}
-   cd ./${WALLETDLFOLDER}/bin
+   #tar -xvzf ${WALLETDL}
+   unzip ${WALLETDL} -d ${WALLETDLFOLDER}
+   #cd ./${WALLETDLFOLDER}/bin
+   cd ./${WALLETDLFOLDER}
    sudo chmod 775 *
    sudo mv ./${NAME}* /usr/bin
    #read
    cd ~
-   rm -rfd $CONF_DIR_TMP   
+   rm -rfd $CONF_DIR_TMP
 
    sudo apt-get install -y ufw
    sudo ufw allow ssh/tcp
@@ -151,7 +165,7 @@ while ! [[ $MNCOUNT =~ $re ]] ; do
 done
 
 for (( ; ; ))
-do  
+do
    #echo "************************************************************"
    #echo ""
    #echo "Enter alias for new node. Name must be unique! (Don't use same names as for previous nodes on old chain if you didn't delete old chain folders!)"
@@ -160,9 +174,9 @@ do
 
    if [ -z "$ALIAS1" ]; then
       ALIAS1="mn"
-   fi   
+   fi
 
-   ALIAS1=${ALIAS1,,}  
+   ALIAS1=${ALIAS1,,}
 
    if [[ "$ALIAS1" =~ [^0-9A-Za-z]+ ]] ; then
       echo -e "${RED}$ALIAS1 has characters which are not alphanumeric. Please use only alphanumeric characters.${NC}"
@@ -175,31 +189,31 @@ do
       else
          # OK !!!
          break
-      fi	
-   fi  
+      fi
+   fi
 done
 
 if [ -d "$CONF_DIR_TMP" ]; then
    rm -rfd $CONF_DIR_TMP
 fi
 
-mkdir -p $CONF_DIR_TMP   
-cd $CONF_DIR_TMP  
+mkdir -p $CONF_DIR_TMP
+cd $CONF_DIR_TMP
 echo "Copy BLOCKCHAIN without conf files"
 wget ${BOOTSTRAPURL} -O bootstrap.zip
 cd ~
 
-for STARTNUMBER in `seq 1 1 $MNCOUNT`; do 
+for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
    for (( ; ; ))
-   do  
+   do
       echo "************************************************************"
       echo ""
       EXIT='NO'
       ALIAS="$ALIAS1$STARTNUMBER"
       ALIAS0="${ALIAS1}0${STARTNUMBER}"
-      ALIAS=${ALIAS,,}  
+      ALIAS=${ALIAS,,}
       echo $ALIAS
-      echo "" 
+      echo ""
 
       # check ALIAS
       if [[ "$ALIAS" =~ [^0-9A-Za-z]+ ]] ; then
@@ -211,37 +225,72 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
       else
 	      CONF_DIR=~/.${NAME}_${ALIAS}
          CONF_DIR0=~/.${NAME}_${ALIAS0}
-	  
+
          if [ -d "$CONF_DIR" ]; then
             echo -e "${RED}$ALIAS is already used. $CONF_DIR already exists!${NC}"
             STARTNUMBER=$[STARTNUMBER + 1]
          elif  [ -d "$CONF_DIR0" ]; then
             echo -e "${RED}$ALIAS is already used. $CONF_DIR0 already exists!${NC}"
-            STARTNUMBER=$[STARTNUMBER + 1]            
+            STARTNUMBER=$[STARTNUMBER + 1]
          else
             # OK !!!
             break
-         fi	
-      fi  
-   done   
+         fi
+      fi
+   done
 
    if [ $EXIT == 'YES' ]
    then
       exit 1
    fi
-  
+
+   IP1=""
+   for (( ; ; ))
+   do
+      IP1=$(netstat -peanut -W | grep -i listen | grep -i $NODEIP)
+
+      if [ -z "$IP1" ]; then
+         break
+      else
+    echo "IP already used."
+    #exit
+    echo "Creating fake IP."
+         BASEIP="1.2.3."
+         IP=$BASEIP$STARTNUMBER
+         cat > /etc/netplan/monk_$ALIAS.yaml <<-EOF
+         # This is the network config written by 'subiquity'
+         network:
+           ethernets:
+             ens160:
+               addresses:
+               - $BASEIP$STARTNUMBER/24
+           version: 2
+		EOF
+      fi
+      netplan apply
+      break
+   done
+   echo "IP "$IP
+
+
+  # IPV4="$(ip -4 addr show dev ${ETH_INTERFACE} | grep inet | awk -F '[ \t]+|/' '{print $3}' | head -1)" &>> ${SCRIPT_LOGFILE}
+       #IPV6_INT_BASE="$(ip -6 addr show dev ${ETH_INTERFACE} | grep inet6 | awk -F '[ \t]+|/' '{print $3}' | grep -v ^fe80 | grep -v ^::1 | cut -f1-4 -d':' | head -1)" &>> ${SCRIPT_LOGFILE}
+#STARTNUMBER
+#ip -4 addr add ${IPV4}/24 dev ${ETH_INTERFACE}
+#ip -6 addr add ${IPV6_INT_BASE}:${NETWORK_BASE_TAG}::${NUM}/64 dev ${ETH_INTERFACE}
+
    PORT1=""
    for (( ; ; ))
    do
-      PORT1=$(netstat -peanut | grep -i listen | grep -i $PORT)
+      PORT1=$(netstat -peanut | grep -i listen | grep -i $PORT1)
 
       if [ -z "$PORT1" ]; then
          break
       else
-         PORT=$[PORT + 1]
+         PORT1=$[PORT + 1]
       fi
-   done  
-   echo "PORT "$PORT 
+   done
+   echo "PORT "$PORT
 
    RPCPORT1=""
    for (( ; ; ))
@@ -253,15 +302,15 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
       else
          RPCPORT=$[RPCPORT + 1]
       fi
-   done  
+   done
    echo "RPCPORT "$RPCPORT
 
    PRIVKEY=""
    echo ""
-  
+
    if [[ "$COUNTER" -lt 2 ]]; then
       ALIASONE=$(echo $ALIAS)
-   fi  
+   fi
    echo "ALIASONE="$ALIASONE
 
    # Create scripts
@@ -282,8 +331,9 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
    echo "maxconnections=256" >> ${NAME}.conf_TEMP
 
    echo "" >> ${NAME}.conf_TEMP
-   echo "port=$PORT" >> ${NAME}.conf_TEMP
-  
+   #echo "port=$PORT" >> ${NAME}.conf_TEMP
+   echo "bind=$IP:$PORT" >> ${NAME}.conf_TEMP
+
    if [ -z "$PRIVKEY" ]; then
       echo ""
    else
@@ -292,22 +342,22 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
    fi
 
    sudo ufw allow $PORT/tcp
-   mv ${NAME}.conf_TEMP $CONF_DIR/monkey.conf
- 
+   mv ${NAME}.conf_TEMP $CONF_DIR/monk.conf
+
    if [ -z "$PRIVKEY" ]; then
 	   PID=`ps -ef | grep -i ${NAME} | grep -i ${ALIASONE}/ | grep -v grep | awk '{print $2}'`
-	
+
 	   if [ -z "$PID" ]; then
          # start wallet
-         sh ~/bin/${NAME}d_$ALIASONE.sh  
+         sh ~/bin/${NAME}d_$ALIASONE.sh
 	      sleep 1
 	   fi
-  
+
 	   for (( ; ; ))
-	   do  
+	   do
 	      echo "Please wait ..."
          sleep 2
-	      PRIVKEY=$(~/bin/monkey-cli_${ALIASONE}.sh masternode genkey)
+	      PRIVKEY=$(~/bin/monk-cli_${ALIASONE}.sh createmasternodekey)
 	      echo "PRIVKEY=$PRIVKEY"
 	      if [ -z "$PRIVKEY" ]; then
 	         echo "PRIVKEY is null"
@@ -315,43 +365,46 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
 	         break
          fi
 	   done
-	
+
 	   sleep 1
-	
+
 	   for (( ; ; ))
 	   do
 		   PID=`ps -ef | grep -i ${NAME} | grep -i ${ALIAS}/ | grep -v grep | awk '{print $2}'`
 		   if [ -z "$PID" ]; then
 		      echo ""
 		   else
-		      #STOP 
-		      ~/bin/monkey-cli_$ALIAS.sh stop
+		      #STOP
+		      ~/bin/monk-cli_$ALIAS.sh stop
 		   fi
 		   echo "Please wait ..."
-		   sleep 2 # wait 2 seconds 
+		   sleep 2 # wait 2 seconds
 		   PID=`ps -ef | grep -i ${NAME} | grep -i ${ALIAS}/ | grep -v grep | awk '{print $2}'`
-		   echo "PID="$PID	
-		
+		   echo "PID="$PID
+
 		   if [ -z "$PID" ]; then
 		      sleep 1 # wait 1 second
-		      echo "masternode=1" >> $CONF_DIR/monkey.conf
-		      echo "masternodeprivkey=$PRIVKEY" >> $CONF_DIR/monkey.conf
+		      echo "masternode=1" >> $CONF_DIR/monk.conf
+		      echo "masternodeprivkey=$PRIVKEY" >> $CONF_DIR/monk.conf
+          if [ "$IP1" ];then
+            echo "addnode=$NODEIP:$PORT" >> $CONF_DIR/monk.conf
+          fi
 		      break
 	      fi
 	   done
    fi
-  
+
    sleep 2
    PID=`ps -ef | grep -i ${NAME} | grep -i ${ALIAS}/ | grep -v grep | awk '{print $2}'`
    echo "PID="$PID
-  
+
    if [ -z "$PID" ]; then
       echo ""
    else
-      ~/bin/monkey-cli_$ALIAS.sh stop
-	   sleep 2 # wait 2 seconds 
-   fi	
-  
+      ~/bin/monk-cli_$ALIAS.sh stop
+	   sleep 2 # wait 2 seconds
+   fi
+
    if [ -z "$PID" ]; then
       cd $CONF_DIR
       echo "Copy BLOCKCHAIN without conf files"
@@ -360,22 +413,25 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
 	   rm -R ./sporks &>/dev/null &
 	   rm -R ./chainstate &>/dev/null &
       cp $CONF_DIR_TMP/bootstrap.zip .
-      unzip  bootstrap.zip
+      unzip bootstrap.zip
       rm ./bootstrap.zip
-      sh ~/bin/${NAME}d_$ALIAS.sh		
-      sleep 2 # wait 2 seconds 
-   fi		  
+      sh ~/bin/${NAME}d_$ALIAS.sh
+      sleep 2 # wait 2 seconds
+   fi
 
-  
-   MNCONFIG=$(echo $ALIAS $IPONE:$PORT $PRIVKEY "txhash" "outputidx")
+   if [[ $NODEIP =~ .*:.* ]]; then
+   MNCONFIG=$(echo $ALIAS [$PUBIPv6]:$PORT $PRIVKEY "txhash" "outputidx")
+   else
+   MNCONFIG=$(echo $ALIAS $PUBIPv4:$PORT $PRIVKEY "txhash" "outputidx")
+   fi
    echo $MNCONFIG >> ~/bin/masternode_config.txt
-  
+
    if [[ ${REBOOTRESTART,,} =~ "y" ]] ; then
       (crontab -l 2>/dev/null; echo "@reboot sh ~/bin/${NAME}d_$ALIAS.sh") | crontab -
 	   (crontab -l 2>/dev/null; echo "@reboot sh /root/bin/${NAME}d_$ALIAS.sh") | crontab -
 	   sudo service cron reload
    fi
-  
+
    COUNTER=$[COUNTER + 1]
 done
 

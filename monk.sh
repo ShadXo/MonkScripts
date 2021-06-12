@@ -31,9 +31,9 @@ echo ""
 echo -e "${RED}1. LIST ALL NODES" # -> MONK_LIST.SH" # OK
 echo -e "2. CHECK NODES SYNC" #  -> MONK_CHECK_SYNC.SH" # OK
 echo -e "3. RESYNC NODES THAT ARE OUT OF SYNC" #  -> MONK_CHECK_RESYNC_ALL.SH" # OK
-echo -e "4. RESTART NODES" #  -> MONK_RESTART.SH" # OK
+echo -e "4. START NODES" #  -> MONK_START.SH" # OK
 echo -e "5. STOP NODES" #  -> MONK_STOP.SH" # OK
-echo -e "6. INSTALL NEW NODES" #  -> MONK_SETUPV2.SH" # OK
+echo -e "6. INSTALL NEW NODES" #  -> MONK_SETUPV3.SH" # OK
 echo -e "7. CHECK NODES STATUS" #  -> MONK_CHECK_STATUS.SH" # OK
 echo -e "8. RESYNC SPECIFIC NODE (useful if node is stopped)" # -> monk_resync.sh # OK
 echo -e "9. CALCULATE FREE MEMORY AND CPU FOR NEW NODES" # -> memory_cpu_sysinfo.sh # OK
@@ -67,12 +67,12 @@ elif [[ ${OPTION} == "3" ]] ; then
   dos2unix monk_check_resync_all.sh > /dev/null 2>&1
   /bin/bash ./monk_check_resync_all.sh $ALIAS
 elif [[ ${OPTION} == "4" ]] ; then
-  echo -e "${RED}Which node do you want to restart? Enter alias (if empty then will check all)${NC}"
+  echo -e "${RED}Which node do you want to start? Enter alias (if empty then will check all)${NC}"
   read ALIAS
-  wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/monk_restart.sh -O monk_restart.sh > /dev/null 2>&1
-  chmod 777 monk_restart.sh
-  dos2unix monk_restart.sh > /dev/null 2>&1
-  /bin/bash ./monk_restart.sh $ALIAS
+  wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/monk_start.sh -O monk_start.sh > /dev/null 2>&1
+  chmod 777 monk_start.sh
+  dos2unix monk_start.sh > /dev/null 2>&1
+  /bin/bash ./monk_start.sh $ALIAS
 elif [[ ${OPTION} == "5" ]] ; then
   echo -e "${RED}Which node do you want to stop? Enter alias (if empty then will check all)${NC}"
   read ALIAS
@@ -81,10 +81,10 @@ elif [[ ${OPTION} == "5" ]] ; then
   dos2unix monk_stop.sh > /dev/null 2>&1
   /bin/bash ./monk_stop.sh $ALIAS
 elif [[ ${OPTION} == "6" ]] ; then
-  wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/monk_setupv2.sh -O monk_setupv2.sh > /dev/null 2>&1
-  chmod 777 monk_setupv2.sh
-  dos2unix monk_setupv2.sh > /dev/null 2>&1
-  /bin/bash ./monk_setupv2.sh
+  wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/monk_setupv3.sh -O monk_setupv3.sh > /dev/null 2>&1
+  chmod 777 monk_setupv3.sh
+  dos2unix monk_setupv3.sh > /dev/null 2>&1
+  /bin/bash ./monk_setupv3.sh
 elif [[ ${OPTION} == "7" ]] ; then
   echo -e "${RED}For which node do you want to check masternode status? Enter alias (if empty then will check all)${NC}"
   read ALIAS
@@ -111,6 +111,11 @@ elif [[ ${OPTION} == "10" ]] ; then
   /bin/bash ./monkey_logo.sh
 elif [[ ${OPTION} == "11" ]] ; then
   exit 0
+elif [[ ${OPTION} == "50" ]] ; then
+  wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/monk_setupv3-f.sh -O monk_setupv3-f.sh > /dev/null 2>&1
+  chmod 777 monk_setupv3-f.sh
+  dos2unix monk_setupv3-f.sh > /dev/null 2>&1
+  /bin/bash ./monk_setupv3-f.sh
 fi
 ###
 read -n 1 -s -r -p "****Press any key to go back to MONKEY MAIN MENU*****"

@@ -1,34 +1,35 @@
-echo 
+echo
 echo "MONK - Masternode updater"
 echo ""
 echo "Welcome to the MONK Masternode update script."
-echo "Wallet v2.3.0"
+echo "Wallet v3.0.0.0"
 echo
 
-for filename in ~/bin/monkey-cli*.sh; do
+for filename in ~/bin/monk-cli*.sh; do
   sh $filename stop
   sleep 1
 done
 
 cd ~
-sudo killall -9 monkeyd
-sudo rm -rdf /usr/bin/monkey*
+sudo killall -9 monkd
+sudo rm -rdf /usr/bin/monk*
 cd
 
-mkdir -p MONKEY_TMP
-cd MONKEY_TMP
-wget https://github.com/MONKEYPROJECT/MonkeyV2/releases/download/v2.3.0/monkey-2.3.0-x86_64-linux-gnu.tar.gz
-sudo chmod 775 monkey-2.3.0-x86_64-linux-gnu.tar.gz
-tar -xvzf monkey-2.3.0-x86_64-linux-gnu.tar.gz
+mkdir -p MONK_TMP
+cd MONK_TMP
+wget https://github.com/decenomy/MONK/releases/download/v3.0.0.0/MONK-3.0.0.0-Linux.zip
+sudo chmod 775 MONK-3.0.0.0-Linux.zip
+#tar -xvzf monkey-2.3.0-x86_64-linux-gnu.tar.gz
+unzip MONK-3.0.0.0-Linux.zip -d MONK-3.0.0.0
 
-rm -f monkey-2.3.0-x86_64-linux-gnu.tar.gz
-sudo chmod 775 ./monkey-2.3.0/bin/*
-sudo mv ./monkey-2.3.0/bin/monkey* /usr/bin
+rm -f MONK-3.0.0.0-Linux.zip
+sudo chmod 775 ./MONK-3.0.0.0/bin/*
+sudo mv ./MONK-3.0.0.0/bin/monk* /usr/bin
 
 cd ~
-rm -rdf MONKEY_TMP
+rm -rdf MONK_TMP
 
-for filename in ~/bin/monkeyd*.sh; do
+for filename in ~/bin/monkd*.sh; do
   echo $filename
   sh $filename
   sleep 1
