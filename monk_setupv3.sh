@@ -10,9 +10,8 @@ NC='\033[0m' # No Color
 
 # CONFIGURATION
 NAME="monk"
-NAMEALIAS="monk"
-BOOTSTRAPALIAS="MONK"
-WALLETVERSION="3.0.1.1"
+NAMEALIAS="MONK"
+WALLETVERSION="3.0.1.2"
 
 # ADDITINAL CONFIGURATION
 WALLETDLFOLDER="${NAME}-${WALLETVERSION}"
@@ -22,7 +21,7 @@ URL="https://github.com/decenomy/MONK/releases/download/v${WALLETVERSION}/${WALL
 CONF_FILE="${NAME}.conf"
 CONF_DIR_TMP=~/"${NAME}_tmp"
 #BOOTSTRAPURL="http://167.86.97.235/${NAMEALIAS}/bootstrap/bootstrap.zip"
-BOOTSTRAPURL="https://explorer.decenomy.net/bootstraps/${BOOTSTRAPALIAS}/bootstrap.zip"
+BOOTSTRAPURL="https://explorer.decenomy.net/bootstraps/${NAMEALIAS}/bootstrap.zip"
 PORT=32270
 RPCPORT=32271
 
