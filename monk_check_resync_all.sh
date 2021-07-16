@@ -23,7 +23,7 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
   MONKSTARTPOS_1=$(echo ${MONKSTARTPOS:0:2})
   MONKSTARTPOS_1=$[MONKSTARTPOS_1 + 1]
   MONKNAME=$(echo ${FILE:MONKSTARTPOS_1:${MONKLENGTH:0:2}-MONKSTARTPOS_1})
-  MONKCONFPATH=$(echo "$HOME/.monkey_$MONKNAME")
+  MONKCONFPATH=$(echo "$HOME/.monk_$MONKNAME")
   # echo $MONKSTARTPOS_1
   # echo ${MONKLENGTH:0:2}
   echo CONF FOLDER: $MONKCONFPATH
@@ -93,14 +93,14 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
 		# echo $LASTBLOCKCOINEXPLORERMONK
 		#break
 		#STOP
-		~/bin/monkey-cli_$MONKNAME.sh stop
+		~/bin/monk-cli_$MONKNAME.sh stop
 
 		if [[ "$COUNTER" -gt 1 ]]; then
 		  kill -9 $MONKPID
 		fi
 
 		sleep 2 # wait 2 seconds
-		MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkeyd | grep -v grep | awk '{print $2}'`
+		MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkd | grep -v grep | awk '{print $2}'`
 		echo "MONKPID="$MONKPID
 
 		if [ -z "$MONKPID" ]; then
@@ -113,7 +113,7 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
 		  #wget http://107.191.46.178/monk/bootstrap/bootstrap.zip -O bootstrap.zip
 		  #wget http://194.135.84.214/monk/bootstrap/bootstrap.zip -O bootstrap.zip
 		  #wget http://167.86.97.235/monk/bootstrap/bootstrap.zip -O bootstrap.zip
-      wget https://explorer.decenomy.net/bootstraps/monk/bootstrap.zip -O bootstrap.zip
+      wget https://explorer.decenomy.net/bootstraps/MONK/bootstrap.zip -O bootstrap.zip
 		  # rm -R peers.dat
 		  rm -R ./database
 		  rm -R ./blocks
@@ -123,7 +123,7 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
 		  $FILE
 		  sleep 3 # wait 3 seconds
 
-		  MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkeyd | grep -v grep | awk '{print $2}'`
+		  MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkd | grep -v grep | awk '{print $2}'`
 		  echo "MONKPID="$MONKPID
 
 		  if [ -z "$MONKPID" ]; then

@@ -5,7 +5,7 @@
 ##
 
 PARAM1=$*
-PARAM1=${PARAM1,,} 
+PARAM1=${PARAM1,,}
 
 sudo apt-get install -y jq > /dev/null 2>&1
 
@@ -31,46 +31,46 @@ for FILE in ~/bin/monkeyd_$PARAM1.sh; do
   MONKSTARTPOS_1=$(echo ${MONKSTARTPOS:0:2})
   MONKSTARTPOS_1=$[MONKSTARTPOS_1 + 1]
   MONKNAME=$(echo ${FILE:MONKSTARTPOS_1:${MONKLENGTH:0:2}-MONKSTARTPOS_1})
-  MONKCONFPATH=$(echo "$HOME/.monkey_$MONKNAME")
+  MONKCONFPATH=$(echo "$HOME/.monk_$MONKNAME")
   # echo $MONKSTARTPOS_1
   # echo ${MONKLENGTH:0:2}
   echo CONF DIR: $MONKCONFPATH
-  
+
   if [ ! -d $MONKCONFPATH ]; then
 	echo "Directory $MONKCONFPATH not found!"
 	exit -1
-  fi	   
-  
+  fi
+
   for (( ; ; ))
   do
     sleep 2
-	
-	MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkeyd | grep -v grep | awk '{print $2}'`
+
+	MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkd | grep -v grep | awk '{print $2}'`
 	echo "MONKPID="$MONKPID
-	
+
 	if [ -z "$MONKPID" ]; then
 	  echo "Monk $MONKNAME is STOPPED can't check if synced!"
 	fi
-  
-	LASTBLOCK=$(~/bin/monkey-cli_$MONKNAME.sh getblockcount)
-	GETBLOCKHASH=$(~/bin/monkey-cli_$MONKNAME.sh getblockhash $LASTBLOCK)
+
+	LASTBLOCK=$(~/bin/monk-cli_$MONKNAME.sh getblockcount)
+	GETBLOCKHASH=$(~/bin/monk-cli_$MONKNAME.sh getblockhash $LASTBLOCK)
 
 	echo "LASTBLOCK="$LASTBLOCK
 	echo "GETBLOCKHASH="$GETBLOCKHASH
-	
+
 	#LASTBLOCKCOINEXPLORERMONK=$(curl -s4 https://www.coinexplorer.net/api/MONK/block/latest)
 	# echo $LASTBLOCKCOINEXPLORERMONK
 	#BLOCKHASHCOINEXPLORERMONK=', ' read -r -a array <<< $LASTBLOCKCOINEXPLORERMONK
 	#BLOCKCOUNTCOINEXPLORERMONK=${array[8]}
-	# echo $BLOCKCOUNTCOINEXPLORERMONK	
+	# echo $BLOCKCOUNTCOINEXPLORERMONK
 	#BLOCKCOUNTCOINEXPLORERMONK=$(echo $BLOCKCOUNTCOINEXPLORERMONK | tr , " ")
 	# echo $BLOCKCOUNTCOINEXPLORERMONK
 	#BLOCKCOUNTCOINEXPLORERMONK=$(echo $BLOCKCOUNTCOINEXPLORERMONK | tr '"' " ")
 	# echo $BLOCKCOUNTCOINEXPLORERMONK
 	# echo -e "BLOCKCOUNTCOINEXPLORERMONK='${BLOCKCOUNTCOINEXPLORERMONK}'"
 	#BLOCKCOUNTCOINEXPLORERMONK="$(echo -e "${BLOCKCOUNTCOINEXPLORERMONK}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-	# echo -e "BLOCKCOUNTCOINEXPLORERMONK='${BLOCKCOUNTCOINEXPLORERMONK}'"	
-	
+	# echo -e "BLOCKCOUNTCOINEXPLORERMONK='${BLOCKCOUNTCOINEXPLORERMONK}'"
+
 	#BLOCKHASHCOINEXPLORERMONK=${array[6]}
 	# echo "BLOCKHASHCOINEXPLORERMONK="$BLOCKHASHCOINEXPLORERMONK
 	#BLOCKHASHCOINEXPLORERMONK=$(echo $BLOCKHASHCOINEXPLORERMONK | tr , " ")
@@ -81,7 +81,7 @@ for FILE in ~/bin/monkeyd_$PARAM1.sh; do
 	#BLOCKHASHCOINEXPLORERMONK="$(echo -e "${BLOCKHASHCOINEXPLORERMONK}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 	# echo -e "BLOCKHASHCOINEXPLORERMONK='${BLOCKHASHCOINEXPLORERMONK}'"
 
-    BLOCKHASHCOINEXPLORERMONK=$(curl -s4 https://www.coinexplorer.net/api/MONK/block/latest | jq -r ".result.hash")	
+    BLOCKHASHCOINEXPLORERMONK=$(curl -s4 https://www.coinexplorer.net/api/MONK/block/latest | jq -r ".result.hash")
 
 	echo "LASTBLOCK="$LASTBLOCK
 	echo "GETBLOCKHASH="$GETBLOCKHASH
@@ -93,65 +93,66 @@ for FILE in ~/bin/monkeyd_$PARAM1.sh; do
 
 	if [ "$BLOCKHASHCOINEXPLORERMONK" == "Too" ]; then
 	   echo "COINEXPLORERMONK Too many requests"
-	   break  
+	   break
 	fi
-	
+
 	# Wallet is not synced
 	echo $DATE" Wallet $MONKNAME is NOT SYNCED!"
 	#
 	# echo $LASTBLOCKCOINEXPLORERMONK
 	#break
-	
+
 	if [ -z "$MONKPID" ]; then
 	   echo ""
 	else
-		#STOP 
-		~/bin/monkey-cli_$MONKNAME.sh stop
+		#STOP
+		~/bin/monk-cli_$MONKNAME.sh stop
 
 		if [[ "$COUNTER" -gt 1 ]]; then
 		  kill -9 $MONKPID
 		fi
 	fi
-	
-	sleep 2 # wait 2 seconds 
-	MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkeyd | grep -v grep | awk '{print $2}'`
+
+	sleep 2 # wait 2 seconds
+	MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkd | grep -v grep | awk '{print $2}'`
 	echo "MONKPID="$MONKPID
-	
+
 	if [ -z "$MONKPID" ]; then
 	  echo "Monk $MONKNAME is STOPPED"
-	  
+
 	  cd $MONKCONFPATH
 	  echo CURRENT CONF FOLDER: $PWD
 	  echo "Copy BLOCKCHAIN without conf files"
 	  # wget http://blockchain.monkey.vision/ -O bootstrap.zip
 	  # wget http://107.191.46.178/monk/bootstrap/bootstrap.zip -O bootstrap.zip
 	  # wget http://194.135.84.214/monk/bootstrap/bootstrap.zip -O bootstrap.zip
-	  wget http://167.86.97.235/monk/bootstrap/bootstrap.zip -O bootstrap.zip
-	  # rm -R peers.dat 
+	  # wget http://167.86.97.235/monk/bootstrap/bootstrap.zip -O bootstrap.zip
+    wget https://explorer.decenomy.net/bootstraps/MONK/bootstrap.zip -O bootstrap.zip
+	  # rm -R peers.dat
 	  rm -R ./database
-	  rm -R ./blocks	
+	  rm -R ./blocks
 	  rm -R ./sporks
-	  rm -R ./chainstate		  
+	  rm -R ./chainstate
 	  unzip  bootstrap.zip
 	  $FILE
-	  sleep 3 # wait 3 seconds 
-	  
-	  MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkeyd | grep -v grep | awk '{print $2}'`
+	  sleep 3 # wait 3 seconds
+
+	  MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkd | grep -v grep | awk '{print $2}'`
 	  echo "MONKPID="$MONKPID
-	  
+
 	  if [ -z "$MONKPID" ]; then
 		echo "Monk $MONKNAME still not running!"
 	  fi
-	  
+
 	  break
 	else
 	  echo "Monk $MONKNAME still running!"
 	fi
-	
+
 	COUNTER=$[COUNTER + 1]
 	echo COUNTER: $COUNTER
 	if [[ "$COUNTER" -gt 9 ]]; then
 	  break
-	fi		
-  done		
+	fi
+  done
 done
