@@ -80,8 +80,9 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
 	# echo -e "BLOCKHASHCOINEXPLORERMONK='${BLOCKHASHCOINEXPLORERMONK}'"
 	#BLOCKHASHCOINEXPLORERMONK="$(echo -e "${BLOCKHASHCOINEXPLORERMONK}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
 	# echo -e "BLOCKHASHCOINEXPLORERMONK='${BLOCKHASHCOINEXPLORERMONK}'"
+  #BLOCKHASHCOINEXPLORERMONK=$(curl -s4 https://www.coinexplorer.net/api/MONK/block/latest | jq -r ".result.hash")
 
-    BLOCKHASHCOINEXPLORERMONK=$(curl -s4 https://www.coinexplorer.net/api/MONK/block/latest | jq -r ".result.hash")
+  BLOCKHASHCOINEXPLORERMONK=$(curl -s4 https://explorer.decenomy.net/coreapi/v1/coins/MONK/blocks | jq -r ".response[0].blockhash")
 
 	echo "LASTBLOCK="$LASTBLOCK
 	echo "GETBLOCKHASH="$GETBLOCKHASH

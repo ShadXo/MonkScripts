@@ -37,8 +37,11 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
 	  #BLOCKHASHCOINEXPLORERMONK=$(echo $BLOCKHASHCOINEXPLORERMONK | tr , " ")
 	  #BLOCKHASHCOINEXPLORERMONK=$(echo $BLOCKHASHCOINEXPLORERMONK | tr '"' " ")
 	  #BLOCKHASHCOINEXPLORERMONK="$(echo -e "${BLOCKHASHCOINEXPLORERMONK}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+	  #BLOCKHASHCOINEXPLORERMONK=$(curl -s4 https://www.coinexplorer.net/api/MONK/block/latest | jq -r ".result.hash")
 
-	  BLOCKHASHCOINEXPLORERMONK=$(curl -s4 https://www.coinexplorer.net/api/MONK/block/latest | jq -r ".result.hash")
+    BLOCKHASHCOINEXPLORERMONK=$(curl -s4 https://explorer.decenomy.net/coreapi/v1/coins/MONK/blocks | jq -r ".response[0].blockhash")
+
+    #LATESTWALLETVERSION=$(curl -s4 https://https://explorer.decenomy.net/coreapi/v1/coins/MONK?expand=overview | jq -r ".response.versions.wallet")
 
 	  WALLETVERSION=$(~/bin/monk-cli_$MONKNAME.sh getinfo | grep -i \"version\")
 	  WALLETVERSION=$(echo $WALLETVERSION | tr , " ")
