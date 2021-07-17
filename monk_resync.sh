@@ -14,12 +14,12 @@ if [ -z "$PARAM1" ]; then
   exit -1
 fi
 
-if [ ! -f ~/bin/monkeyd_$PARAM1.sh ]; then
+if [ ! -f ~/bin/monkd_$PARAM1.sh ]; then
     echo "Wallet $PARAM1 not found!"
 	exit -1
 fi
 
-for FILE in ~/bin/monkeyd_$PARAM1.sh; do
+for FILE in ~/bin/monkd_$PARAM1.sh; do
   echo "****************************************************************************"
   COUNTER=1
   DATE=$(date '+%d.%m.%Y %H:%M:%S');
