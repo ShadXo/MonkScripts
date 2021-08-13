@@ -1,5 +1,6 @@
 #!/bin/bash
 
+NAME="monk"
 PARAM1=$*
 
 sudo apt-get install -y jq > /dev/null 2>&1
@@ -10,7 +11,7 @@ else
   PARAM1=${PARAM1,,}
 fi
 
-for FILE in ~/bin/monkd_$PARAM1.sh; do
+for FILE in ~/bin/${NAME}d_$PARAM1.sh; do
   echo "****************************************************************************"
   COUNTER=1
   DATE=$(date '+%d.%m.%Y %H:%M:%S');
@@ -23,7 +24,7 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
   MONKSTARTPOS_1=$(echo ${MONKSTARTPOS:0:2})
   MONKSTARTPOS_1=$[MONKSTARTPOS_1 + 1]
   MONKNAME=$(echo ${FILE:MONKSTARTPOS_1:${MONKLENGTH:0:2}-MONKSTARTPOS_1})
-  MONKCONFPATH=$(echo "$HOME/.monk_$MONKNAME")
+  MONKCONFPATH=$(echo "$HOME/.${NAME}_$MONKNAME")
   # echo $MONKSTARTPOS_1
   # echo ${MONKLENGTH:0:2}
   echo CONF FOLDER: $MONKCONFPATH
@@ -32,7 +33,7 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
   do
     sleep 2
 
-	MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkd | grep -v grep | awk '{print $2}'`
+	MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i ${NAME}d | grep -v grep | awk '{print $2}'`
 	echo "MONKPID="$MONKPID
 
 	if [ -z "$MONKPID" ]; then
@@ -40,8 +41,8 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
 	  break
 	fi
 
-	LASTBLOCK=$(~/bin/monk-cli_$MONKNAME.sh getblockcount)
-	GETBLOCKHASH=$(~/bin/monk-cli_$MONKNAME.sh getblockhash $LASTBLOCK)
+	LASTBLOCK=$(~/bin/${NAME}-cli_$MONKNAME.sh getblockcount)
+	GETBLOCKHASH=$(~/bin/${NAME}-cli_$MONKNAME.sh getblockhash $LASTBLOCK)
 
 	echo "LASTBLOCK="$LASTBLOCK
 	echo "GETBLOCKHASH="$GETBLOCKHASH
@@ -94,14 +95,14 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
 		# echo $LASTBLOCKCOINEXPLORERMONK
 		#break
 		#STOP
-		~/bin/monk-cli_$MONKNAME.sh stop
+		~/bin/${NAME}-cli_$MONKNAME.sh stop
 
 		if [[ "$COUNTER" -gt 1 ]]; then
 		  kill -9 $MONKPID
 		fi
 
 		sleep 2 # wait 2 seconds
-		MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkd | grep -v grep | awk '{print $2}'`
+		MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i ${NAME}d | grep -v grep | awk '{print $2}'`
 		echo "MONKPID="$MONKPID
 
 		if [ -z "$MONKPID" ]; then
@@ -124,7 +125,7 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
 		  $FILE
 		  sleep 3 # wait 3 seconds
 
-		  MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i monkd | grep -v grep | awk '{print $2}'`
+		  MONKPID=`ps -ef | grep -i _$MONKNAME | grep -i ${NAME}d | grep -v grep | awk '{print $2}'`
 		  echo "MONKPID="$MONKPID
 
 		  if [ -z "$MONKPID" ]; then

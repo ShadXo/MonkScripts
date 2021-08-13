@@ -1,5 +1,6 @@
 #!/bin/bash
 
+NAME="monk"
 PARAM1=$*
 
 if [ -z "$PARAM1" ]; then
@@ -10,7 +11,7 @@ fi
 
 sudo apt-get install -y jq > /dev/null 2>&1
 
-for FILE in ~/bin/monkd_$PARAM1.sh; do
+for FILE in ~/bin/${NAME}d_$PARAM1.sh; do
   sleep 2
   echo "****************************************************************************"
   echo FILE: " $FILE"
@@ -28,8 +29,8 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
     echo "Monk $MONKNAME is STOPPED can't check if synced!"
   else
 
-	  LASTBLOCK=$(~/bin/monk-cli_$MONKNAME.sh getblockcount)
-	  GETBLOCKHASH=$(~/bin/monk-cli_$MONKNAME.sh getblockhash $LASTBLOCK)
+	  LASTBLOCK=$(~/bin/${NAME}-cli_$MONKNAME.sh getblockcount)
+	  GETBLOCKHASH=$(~/bin/${NAME}-cli_$MONKNAME.sh getblockhash $LASTBLOCK)
 
 	  #LASTBLOCKCOINEXPLORERMONK=$(curl -s4 https://www.coinexplorer.net/api/MONK/block/latest)
 	  #BLOCKHASHCOINEXPLORERMONK=', ' read -r -a array <<< $LASTBLOCKCOINEXPLORERMONK
@@ -43,7 +44,7 @@ for FILE in ~/bin/monkd_$PARAM1.sh; do
 
     #LATESTWALLETVERSION=$(curl -s4 https://https://explorer.decenomy.net/coreapi/v1/coins/MONK?expand=overview | jq -r ".response.versions.wallet")
 
-	  WALLETVERSION=$(~/bin/monk-cli_$MONKNAME.sh getinfo | grep -i \"version\")
+	  WALLETVERSION=$(~/bin/${NAME}-cli_$MONKNAME.sh getinfo | grep -i \"version\")
 	  WALLETVERSION=$(echo $WALLETVERSION | tr , " ")
 	  WALLETVERSION=$(echo $WALLETVERSION | tr '"' " ")
 	  WALLETVERSION=$(echo $WALLETVERSION | tr 'version : ' " ")

@@ -14,14 +14,14 @@ URL="https://github.com/decenomy/MONK/releases/download/v${WALLETVERSION}/${WALL
 CONF_DIR_TMP=~/"${NAME}_tmp"
 
 
-for filename in ~/bin/monk-cli*.sh; do
+for filename in ~/bin/${NAME}-cli*.sh; do
   sh $filename stop
   sleep 1
 done
 
 cd ~
-sudo killall -9 monkd
-sudo rm -rdf /usr/bin/monk*
+sudo killall -9 ${NAME}d
+sudo rm -rdf /usr/bin/${NAME}*
 cd
 
 mkdir -p $CONF_DIR_TMP
@@ -32,14 +32,14 @@ sudo chmod 775 ${WALLETDL}
 unzip ${WALLETDL} -d ${WALLETDLFOLDER}
 
 #rm -f ${WALLETDL}
-cd ./${WALLETDLFOLDER}
+cd $CONF_DIR_TMP
 sudo chmod 775 *
 sudo mv ./${NAME}* /usr/bin
 
 cd ~
 rm -rfd $CONF_DIR_TMP
 
-for filename in ~/bin/monkd*.sh; do
+for filename in ~/bin/${NAME}d*.sh; do
   echo $filename
   sh $filename
   sleep 1

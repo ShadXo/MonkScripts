@@ -11,7 +11,7 @@ NC='\033[0m' # No Color
 # CONFIGURATION
 NAME="monk"
 NAMEALIAS="MONK"
-WALLETVERSION="3.0.1.2"
+WALLETVERSION="3.0.2.0"
 
 # ADDITINAL CONFIGURATION
 WALLETDLFOLDER="${NAME}-${WALLETVERSION}"
@@ -74,6 +74,8 @@ function get_ip() {
   fi
 }
 
+apt-get install -y net-tools > /dev/null
+
 get_ip
 #IP="[${NODEIP}]"
 PUBIPv4=$( timeout --signal=SIGKILL 10s wget -4qO- -T 10 -t 2 -o- "--bind-address=${NODEIP}" http://ipinfo.io/ip )
@@ -101,21 +103,24 @@ if [[ ${DOSETUP,,} =~ "y" ]] ; then
    sudo apt-get install -y libminiupnpc-dev
    sudo apt-get install -y autoconf
    sudo apt-get install -y automake unzip
-   sudo add-apt-repository -y ppa:bitcoin/bitcoin
+   sudo add-apt-repository -y ppa:luke-jr/bitcoincore
    sudo apt-get update
    sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
    sudo apt-get install -y dos2unix
    sudo apt-get install -y jq
 
-   cd /var
-   sudo touch swap.img
-   sudo chmod 600 swap.img
-   sudo dd if=/dev/zero of=/var/swap.img bs=1024k count=2000
-   sudo mkswap /var/swap.img
-   sudo swapon /var/swap.img
-   sudo free
-   sudo echo "/var/swap.img none swap sw 0 0" >> /etc/fstab
-   cd
+   if [ $(free | awk '/^Swap:/ {exit !$2}') ] || [ ! -f "/var/swap.img" ];then
+       echo "No proper swap, creating it"
+       sudo touch /var/swap.img
+       sudo chmod 600 /var/swap.img
+       sudo dd if=/dev/zero of=/var/swap.img bs=1024k count=2000
+       sudo mkswap /var/swap.img
+       sudo swapon /var/swap.img
+       sudo free
+       sudo echo "/var/swap.img none swap sw 0 0" >> /etc/fstab
+   else
+       echo "All good, we have a swap"
+   fi
 
    ## COMPILE AND INSTALL
    if [ -d "$CONF_DIR_TMP" ]; then
@@ -154,15 +159,19 @@ mkdir -p ~/bin
 rm ~/bin/masternode_config.txt &>/dev/null &
 COUNTER=1
 
-MNCOUNT=""
-REBOOTRESTART=""
+MNCOUNT="1"
+#REBOOTRESTART=""
 re='^[0-9]+$'
 while ! [[ $MNCOUNT =~ $re ]] ; do
    echo -e "${YELLOW}How many nodes do you want to create on this server?, followed by [ENTER]:${NC}"
    read MNCOUNT
-   echo -e "${YELLOW}Do you want wallets to restart on reboot? [y/n]${NC}"
-   read REBOOTRESTART
+   #echo -e "${YELLOW}Do you want wallets to restart on reboot? [y/n]${NC}"
+   #read REBOOTRESTART
 done
+
+REBOOTRESTART="y"
+#echo -e "${YELLOW}Do you want wallets to restart on reboot? [y/n]${NC}"
+#read REBOOTRESTART
 
 for (( ; ; ))
 do
@@ -332,6 +341,7 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
 
    echo "" >> ${NAME}.conf_TEMP
    #echo "port=$PORT" >> ${NAME}.conf_TEMP
+   echo "externalip=${EXTERNALIP}" >> ${NAME}.conf_TEMP
    echo "bind=$IP:$PORT" >> ${NAME}.conf_TEMP
 
    if [ -z "$PRIVKEY" ]; then
@@ -386,6 +396,9 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
 		      sleep 1 # wait 1 second
 		      echo "masternode=1" >> $CONF_DIR/monk.conf
 		      echo "masternodeprivkey=$PRIVKEY" >> $CONF_DIR/monk.conf
+          if [ "$IP1" ];then
+            echo "addnode=$NODEIP:$PORT" >> $CONF_DIR/monk.conf
+          fi
 		      break
 	      fi
 	   done
