@@ -39,15 +39,15 @@ echo "!                                                 !"
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 echo && echo && echo
 
-if [[ $(lsb_release -d) != *16.04* ]]; then
-   echo -e "${RED}The operating system is not Ubuntu 16.04. You must be running on Ubuntu 16.04! Do you really want to continue? [y/n]${NC}"
-   read OS_QUESTION
-   if [[ ${OS_QUESTION,,} =~ "y" ]] ; then
-      echo -e "${RED}You are on your own now!${NC}"
-   else
-      exit -1
-   fi
-fi
+#if [[ $(lsb_release -d) != *16.04* ]]; then
+#   echo -e "${RED}The operating system is not Ubuntu 16.04. You must be running on Ubuntu 16.04! Do you really want to continue? [y/n]${NC}"
+#   read OS_QUESTION
+#   if [[ ${OS_QUESTION,,} =~ "y" ]] ; then
+#      echo -e "${RED}You are on your own now!${NC}"
+#   else
+#      exit -1
+#   fi
+#fi
 
 function get_ip() {
   declare -a NODE_IPS
@@ -84,8 +84,10 @@ if [[ $NODEIP =~ .*:.* ]]; then
 #INTIP=$(ip -4 addr show dev $ips | grep inet | awk -F '[ \t]+|/' '{print $3}' | head -1)
 #IP=${INTIP}
 IP="[${NODEIP}]"
+EXTERNALIP="[${PUBIPv6}]"
 else
 IP=${NODEIP}
+EXTERNALIP=${PUBIPv4}
 fi
 
 echo -e "${YELLOW}Do you want to install all needed dependencies (no if you did it before, yes if you are installing your first node)? [y/n]${NC}"
@@ -103,7 +105,7 @@ if [[ ${DOSETUP,,} =~ "y" ]] ; then
    sudo apt-get install -y libminiupnpc-dev
    sudo apt-get install -y autoconf
    sudo apt-get install -y automake unzip
-   sudo add-apt-repository -y ppa:bitcoin/bitcoin
+   sudo add-apt-repository -y ppa:luke-jr/bitcoincore
    sudo apt-get update
    sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
    sudo apt-get install -y dos2unix
@@ -261,12 +263,13 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
       if [ -z "$IP1" ]; then
          break
       else
+    echo -e "${RED}IP: $NODEIP is already used.${NC}"
     echo "IP already used."
     #exit
     echo "Creating fake IP."
          BASEIP="1.2.3."
          IP=$BASEIP$STARTNUMBER
-         cat > /etc/netplan/monk_$ALIAS.yaml <<-EOF
+         cat > /etc/netplan/${NAME}_$ALIAS.yaml <<-EOF
          # This is the network config written by 'subiquity'
          network:
            ethernets:
@@ -280,13 +283,7 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
       break
    done
    echo "IP "$IP
-
-
-  # IPV4="$(ip -4 addr show dev ${ETH_INTERFACE} | grep inet | awk -F '[ \t]+|/' '{print $3}' | head -1)" &>> ${SCRIPT_LOGFILE}
-       #IPV6_INT_BASE="$(ip -6 addr show dev ${ETH_INTERFACE} | grep inet6 | awk -F '[ \t]+|/' '{print $3}' | grep -v ^fe80 | grep -v ^::1 | cut -f1-4 -d':' | head -1)" &>> ${SCRIPT_LOGFILE}
-#STARTNUMBER
-#ip -4 addr add ${IPV4}/24 dev ${ETH_INTERFACE}
-#ip -6 addr add ${IPV6_INT_BASE}:${NETWORK_BASE_TAG}::${NUM}/64 dev ${ETH_INTERFACE}
+   echo "PORT "$PORT
 
    PORT1=""
    for (( ; ; ))
@@ -352,7 +349,7 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
    fi
 
    sudo ufw allow $PORT/tcp
-   mv ${NAME}.conf_TEMP $CONF_DIR/monk.conf
+   mv ${NAME}.conf_TEMP $CONF_DIR/${NAME}.conf
 
    if [ -z "$PRIVKEY" ]; then
 	   PID=`ps -ef | grep -i ${NAME} | grep -i ${ALIASONE}/ | grep -v grep | awk '{print $2}'`
@@ -367,7 +364,7 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
 	   do
 	      echo "Please wait ..."
          sleep 2
-	      PRIVKEY=$(~/bin/monk-cli_${ALIASONE}.sh createmasternodekey)
+	      PRIVKEY=$(~/bin/${NAME}-cli_${ALIASONE}.sh createmasternodekey)
 	      echo "PRIVKEY=$PRIVKEY"
 	      if [ -z "$PRIVKEY" ]; then
 	         echo "PRIVKEY is null"
@@ -385,7 +382,7 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
 		      echo ""
 		   else
 		      #STOP
-		      ~/bin/monk-cli_$ALIAS.sh stop
+		      ~/bin/${NAME}-cli_$ALIAS.sh stop
 		   fi
 		   echo "Please wait ..."
 		   sleep 2 # wait 2 seconds
@@ -394,10 +391,10 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
 
 		   if [ -z "$PID" ]; then
 		      sleep 1 # wait 1 second
-		      echo "masternode=1" >> $CONF_DIR/monk.conf
-		      echo "masternodeprivkey=$PRIVKEY" >> $CONF_DIR/monk.conf
+		      echo "masternode=1" >> $CONF_DIR/${NAME}.conf
+		      echo "masternodeprivkey=$PRIVKEY" >> $CONF_DIR/${NAME}.conf
           if [ "$IP1" ];then
-            echo "addnode=$NODEIP:$PORT" >> $CONF_DIR/monk.conf
+            echo "addnode=$NODEIP:$PORT" >> $CONF_DIR/${NAME}.conf
           fi
 		      break
 	      fi
@@ -411,7 +408,7 @@ for STARTNUMBER in `seq 1 1 $MNCOUNT`; do
    if [ -z "$PID" ]; then
       echo ""
    else
-      ~/bin/monk-cli_$ALIAS.sh stop
+      ~/bin/${NAME}-cli_$ALIAS.sh stop
 	   sleep 2 # wait 2 seconds
    fi
 
