@@ -2,12 +2,12 @@ echo
 echo "MONK - Masternode updater"
 echo ""
 echo "Welcome to the MONK Masternode update script."
-echo "Wallet v3.0.2.0"
+echo "Wallet v3.0.2.1"
 echo
 
 NAME="monk"
 NAMEALIAS="MONK"
-WALLETVERSION="3.0.2.0"
+WALLETVERSION="3.0.2.1"
 WALLETDLFOLDER="${NAME}-${WALLETVERSION}"
 WALLETDL="${WALLETDLFOLDER}-Linux.zip"
 URL="https://github.com/decenomy/MONK/releases/download/v${WALLETVERSION}/${WALLETDL}"
