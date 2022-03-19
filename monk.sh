@@ -36,9 +36,11 @@ echo -e "5. STOP NODES" #  -> MONK_STOP.SH" # OK
 echo -e "6. INSTALL NEW NODES" #  -> MONK_SETUPV3.SH" # OK
 echo -e "7. CHECK NODES STATUS" #  -> MONK_CHECK_STATUS.SH" # OK
 echo -e "8. RESYNC SPECIFIC NODE (useful if node is stopped)" # -> monk_resync.sh # OK
-echo -e "9. CALCULATE FREE MEMORY AND CPU FOR NEW NODES" # -> memory_cpu_sysinfo.sh # OK
-echo -e "${YELLOW}10. MONKEY LOGO${RED}" # MONKEY LOGO
-echo -e "11. EXIT${NC}" # OK
+echo -e "9. REMOVE SPECIFIC NODE" # -> MONK_REMOVE.sh # OK
+echo -e "10. UPDATE NODE WALLET" # -> UPDATE_WALLET.sh # OK
+echo -e "11. CALCULATE FREE MEMORY AND CPU FOR NEW NODES" # -> memory_cpu_sysinfo.sh # OK
+echo -e "${YELLOW}12. MONKEY LOGO${RED}" # MONKEY LOGO
+echo -e "0. EXIT${NC}" # OK
 echo "---------------------------------------"
 echo "choose option number:"
 read OPTION
@@ -100,16 +102,28 @@ elif [[ ${OPTION} == "8" ]] ; then
   dos2unix monk_resync.sh > /dev/null 2>&1
   /bin/bash ./monk_resync.sh $ALIAS
 elif [[ ${OPTION} == "9" ]] ; then
+  echo -e "${RED}Which node do you want to remove? Enter alias (mandatory!)${NC}"
+  read ALIAS
+  wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/monk_remove.sh -O monk_remove.sh > /dev/null 2>&1
+  chmod 777 monk_remove.sh
+  dos2unix monk_remove.sh > /dev/null 2>&1
+  /bin/bash ./monk_remove.sh $ALIAS
+elif [[ ${OPTION} == "10" ]] ; then
+  wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/update_wallet.sh -O update_wallet.sh > /dev/null 2>&1
+  chmod 777 update_wallet.sh
+  dos2unix update_wallet.sh > /dev/null 2>&1
+  /bin/bash ./update_wallet.sh
+elif [[ ${OPTION} == "11" ]] ; then
   wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/memory_cpu_sysinfo.sh -O memory_cpu_sysinfo.sh > /dev/null 2>&1
   chmod 777 memory_cpu_sysinfo.sh
   dos2unix memory_cpu_sysinfo.sh > /dev/null 2>&1
   /bin/bash ./memory_cpu_sysinfo.sh
-elif [[ ${OPTION} == "10" ]] ; then
+elif [[ ${OPTION} == "12" ]] ; then
   wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/monkey_logo.sh -O monkey_logo.sh > /dev/null 2>&1
   chmod 777 monkey_logo.sh
   dos2unix monkey_logo.sh > /dev/null 2>&1
   /bin/bash ./monkey_logo.sh
-elif [[ ${OPTION} == "11" ]] ; then
+elif [[ ${OPTION} == "0" ]] ; then
   exit 0
 elif [[ ${OPTION} == "50" ]] ; then
   wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/monk_setupv3-f.sh -O monk_setupv3-f.sh > /dev/null 2>&1

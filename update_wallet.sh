@@ -25,6 +25,7 @@ sudo rm -rdf /usr/bin/${NAME}*
 cd
 
 mkdir -p $CONF_DIR_TMP
+
 cd $CONF_DIR_TMP
 wget ${URL}
 sudo chmod 775 ${WALLETDL}
@@ -32,7 +33,7 @@ sudo chmod 775 ${WALLETDL}
 unzip ${WALLETDL} -d ${WALLETDLFOLDER}
 
 #rm -f ${WALLETDL}
-cd $CONF_DIR_TMP
+cd ./${WALLETDLFOLDER}
 sudo chmod 775 *
 sudo mv ./${NAME}* /usr/bin
 

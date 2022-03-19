@@ -1,2 +1,2 @@
-# MonkeyProjectScripts
-Scripts for MONKEY Project 
+# MonkScripts
+Scripts for MONK
