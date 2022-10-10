@@ -130,7 +130,23 @@ elif [[ ${OPTION} == "50" ]] ; then
   chmod 777 monk_setupv3-f.sh
   dos2unix monk_setupv3-f.sh > /dev/null 2>&1
   /bin/bash ./monk_setupv3-f.sh
+elif [[ ${OPTION} == "60" ]] ; then
+  echo -e "${RED}For which node do you want to get info? Enter alias (if empty it will run on all nodes)${NC}"
+  read ALIAS
+  wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/monk_info.sh -O monk_info.sh > /dev/null 2>&1
+  chmod 777 monk_info.sh
+  dos2unix monk_info.sh > /dev/null 2>&1
+  /bin/bash ./monk_info.sh $ALIAS
+elif [[ ${OPTION} == "70" ]] ; then
+  echo -e "${RED}On which node do you want to check for a fork? Enter alias (mandatory!)${NC}"
+  read NODE
+  echo -e "${RED}Start checking from block? (mandatory!)${NC}"
+  read BLOCK
+  wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/find_fork.sh -O find_fork.sh > /dev/null 2>&1
+  chmod 777 find_fork.sh
+  dos2unix find_fork.sh > /dev/null 2>&1
+  /bin/bash ./find_fork.sh $NODE $BLOCK
 fi
 ###
-read -n 1 -s -r -p "****Press any key to go back to MONKEY MAIN MENU*****"
+read -n 1 -s -r -p "****Press any key to go back to MONK MAIN MENU*****"
 /bin/bash ./monk.sh
