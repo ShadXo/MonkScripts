@@ -119,10 +119,10 @@ elif [[ ${OPTION} == "11" ]] ; then
   dos2unix memory_cpu_sysinfo.sh > /dev/null 2>&1
   /bin/bash ./memory_cpu_sysinfo.sh
 elif [[ ${OPTION} == "12" ]] ; then
-  wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/monkey_logo.sh -O monkey_logo.sh > /dev/null 2>&1
-  chmod 777 monkey_logo.sh
-  dos2unix monkey_logo.sh > /dev/null 2>&1
-  /bin/bash ./monkey_logo.sh
+  wget https://raw.githubusercontent.com/ShadXo/MonkeyProjectScripts/master/monk_logo.sh -O monk_logo.sh > /dev/null 2>&1
+  chmod 777 monk_logo.sh
+  dos2unix monk_logo.sh > /dev/null 2>&1
+  /bin/bash ./monk_logo.sh
 elif [[ ${OPTION} == "0" ]] ; then
   exit 0
 elif [[ ${OPTION} == "50" ]] ; then
